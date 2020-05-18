@@ -33,7 +33,6 @@ def background_thread():
     while True:
         socketio.sleep(10)
         count += 1
-        print("Server generated event")
         socketio.emit('my_response',
                       {'data': 'Server generated event', 'count': count},
                       namespace='/test')
@@ -46,6 +45,8 @@ def index():
 
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
+    print("Server generated event")
+
     # req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     # response = urlopen(req)
     # messages = json.loads(response.read().decode())
