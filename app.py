@@ -33,6 +33,7 @@ def background_thread():
     while True:
         socketio.sleep(10)
         count += 1
+        print("Server generated event")
         socketio.emit('my_response',
                       {'data': 'Server generated event', 'count': count},
                       namespace='/test')
