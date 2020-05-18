@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from urllib.request import Request, urlopen
 import json
-
+import os
 from threading import Lock
 import requests
 from flask import Flask, render_template, session, request, \
@@ -135,4 +135,6 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    #socketio.run(app, debug=True)
+    socketio.run(host = '0.0.0.0',debug=True, port=int
+    (os.environ.get("PORT", 5000)))
