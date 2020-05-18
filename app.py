@@ -46,16 +46,16 @@ def index():
 
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
-    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    response = urlopen(req)
-    messages = json.loads(response.read().decode())
-    print(message)
-    r = ""
-    for message in messages:
-        r = r + str(message)
+    # req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    # response = urlopen(req)
+    # messages = json.loads(response.read().decode())
+    # print(message)
+    # r = ""
+    # for message in messages:
+    #     r = r + str(message)
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-        {'data': str(r), 'count': session['receive_count']})
+        {'data': message['data'], 'count': session['receive_count']})
 
 
 @socketio.on('my_broadcast_event', namespace='/test')
