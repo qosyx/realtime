@@ -7,7 +7,7 @@ import requests
 from flask import Flask, render_template, session, request, \
     copy_current_request_context
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, rooms, disconnect, send
+    close_room, rooms, disconnect, send, get_received
     
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
@@ -41,16 +41,19 @@ def index():
 def ping():
     print(socketio.emit('connect', {'data': 42}, namespace='/test'))
     
+    
+def ack():
+    print ('message was received!')
+
+    
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
     print("Server generated event")
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-        {'data': message['data'], 'count': session['receive_count']})
+        {'data': message['data'], 'count': session['receive_count']},  callback=ack)
 
-@socketio.on('my_event_resultat')
-def handle_message(message):
-    send(message, namespace='/test')
+
     
 @socketio.on('my_broadcast_event', namespace='/test')
 def test_broadcast_message(message):
