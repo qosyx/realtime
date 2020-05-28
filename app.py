@@ -7,7 +7,7 @@ import requests
 from flask import Flask, render_template, session, request, \
     copy_current_request_context
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, rooms, disconnect
+    close_room, rooms, disconnect, send
     
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
@@ -23,10 +23,6 @@ thread = None
 thread_lock = Lock()
 
 
-
-
-    
-
 def background_thread():
     """Example of how to send server generated events to clients."""
     count = 0
@@ -37,28 +33,25 @@ def background_thread():
                       {'data': 'Server generated event', 'count': count},
                       namespace='/test')
 
-# http://backcovid-19.mydokku.fr/api/scrap_api/getOne
 @app.route('/')
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
 
-
+@app.route('/ping')
+def ping():
+    print(socketio.emit('connect', {'data': 42}, namespace='/test'))
+    
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
     print("Server generated event")
-
-    # req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    # response = urlopen(req)
-    # messages = json.loads(response.read().decode())
-    # print(message)
-    # r = ""
-    # for message in messages:
-    #     r = r + str(message)
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
         {'data': message['data'], 'count': session['receive_count']})
 
-
+@socketio.on('my_event_resultat')
+def handle_message(message):
+    send(message, namespace='/test')
+    
 @socketio.on('my_broadcast_event', namespace='/test')
 def test_broadcast_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
